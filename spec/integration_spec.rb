@@ -18,26 +18,26 @@ RSpec.describe 'integration tests' do
       File.write unencrypted_filename, message
 
       # encrypt
-      result = run 'encrypt', '--in',   unencrypted_filename,
-                              '--out',  encrypted_filename,
-                              '--date', date,
-                              '--key',  key
+      result = run 'enigma', 'encrypt', '--in',   unencrypted_filename,
+                                        '--out',  encrypted_filename,
+                                        '--date', date,
+                                        '--key',  key
       expect(result).to be_success
       expect(result.stderr).to be_empty
       expect(result.stdout).to eq "Created '#{encrypted_filename}' with the key #{key} and date #{date}\n"
       expect(File.read encrypted_filename).to eq encrypted_message
 
       # decrypt
-      result = run 'decrypt', '--in',   unencrypted_filename,
-                              '--out',  decrypted_filename,
-                              '--date', date,
-                              '--key',  key
+      result = run 'enigma', 'decrypt', '--in',   unencrypted_filename,
+                                        '--out',  decrypted_filename,
+                                        '--date', date,
+                                        '--key',  key
       expect(result).to be_success
       expect(result.stderr).to be_empty
       expect(result.stdout).to eq "Created '#{decrypted_filename}' with the key #{key} and date #{date}\n"
 
       # crack
-      result = run 'crack', '--in', encrypted_filename, '--out', cracked_filename
+      result = run 'enigma', 'crack', '--in', encrypted_filename, '--out', cracked_filename
       expect(result).to be_success
       expect(result.stderr).to be_empty
       expect(result.stdout).to eq "Created '#{cracked_filename}' with the key #{key} and date #{date}\n"
@@ -53,26 +53,26 @@ RSpec.describe 'integration tests' do
 
   it '(sanity) incorrectly decrypts messages when its date / key are wrong' do
     # encrypt
-    result = run 'encrypt', '--in',   unencrypted_filename,
-                            '--out',  encrypted_filename,
-                            '--date', '111111',
-                            '--key',  '1111'
+    result = run 'enigma', 'encrypt', '--in',   unencrypted_filename,
+                                      '--out',  encrypted_filename,
+                                      '--date', '111111',
+                                      '--key',  '1111'
     expect(result).to be_success
 
     # decrypt bad date
-    result = run 'decrypt', '--in',   unencrypted_filename,
-                            '--out',  decrypted_filename,
-                            '--date', '222222',
-                            '--key',  '1111'
+    result = run 'enigma', 'decrypt', '--in',   unencrypted_filename,
+                                      '--out',  decrypted_filename,
+                                      '--date', '222222',
+                                      '--key',  '1111'
     expect(result).to be_success
     decrypted_with_bad_date = File.read decrypted_filename
     expect(decrypted_with_bad_date).to_not eq message
 
     # decrypt bad key
-    result = run 'decrypt', '--in',   unencrypted_filename,
-                            '--out',  decrypted_filename,
-                            '--date', '111111',
-                            '--key',  '2222'
+    result = run 'enigma', 'decrypt', '--in',   unencrypted_filename,
+                                      '--out',  decrypted_filename,
+                                      '--date', '111111',
+                                      '--key',  '2222'
     expect(result).to be_success
     decrypted_with_bad_key = File.read decrypted_filename
     expect(decrypted_with_bad_key).to_not eq message

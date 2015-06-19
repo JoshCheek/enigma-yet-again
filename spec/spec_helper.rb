@@ -1,7 +1,7 @@
 require 'open3'
 
 project_root = File.expand_path '..', __dir__
-bin_path     = File.expand_path project_root, 'bin'
+bin_path     = File.expand_path 'bin', project_root
 ENV["PATH"]  = "#{bin_path}:#{ENV["PATH"]}"
 
 module IntegrationTestHelpers
