@@ -1,9 +1,13 @@
+require 'stringio'
+require 'spec_helper'
 require 'enigma/cli'
 
 RSpec.describe Enigma::CLI do
   include IntegrationTestHelpers
+  let(:stdout) { StringIO.new }
+  let(:stderr) { StringIO.new }
 
-  describe 'parsing the arguments' do
+  describe 'parsing the arguments', t:true do
     # need to figure out what the date is
     def parse(argv)
       Enigma::CLI.parse(argv)
@@ -22,18 +26,18 @@ RSpec.describe Enigma::CLI do
     end
 
     it 'considers the output file to be the argument to --out' do
-      expect_parses ['--out', 'abc'], :input_filename, 'abc'
-      expect_parses [],               :input_filename, nil
+      expect_parses ['--out', 'abc'], :output_filename, 'abc'
+      expect_parses [],               :output_filename, nil
     end
 
     it 'considers the date file to be the argument to --date' do
-      expect_parses ['--date', 'abc'], :input_filename, 'abc'
-      expect_parses [],                :input_filename, nil
+      expect_parses ['--date', 'abc'], :date, 'abc'
+      expect_parses [],                :date, nil
     end
 
     it 'considers the key file to be the argument to --key' do
-      expect_parses ['--key', 'abc'], :input_filename, 'abc'
-      expect_parses [],               :input_filename, nil
+      expect_parses ['--key', 'abc'], :key, 'abc'
+      expect_parses [],               :key, nil
     end
 
     it 'uses the default date, formatted to 6 digits, if no date was provided' do
@@ -44,9 +48,20 @@ RSpec.describe Enigma::CLI do
       unique_keys = 100.times.map { parse([]).key }.uniq.length
       expect(unique_keys).to be > 1
     end
+
+    it 'parses the command as the non-argument' do
+      expect_parses ['encrypt'],          command: 'encrypt'
+      expect_parses ['--key', 'encrypt'], command: nil
+      expect_parses [],                   command: nil
+    end
   end
 
   describe 'validating the arguments' do
+    it 'adds an error if no command was given'
+    it 'adds an error if no argument was given to --in'
+    it 'adds an error if no argument was given to --out'
+    it 'adds an error if no argument was given to --date'
+    it 'adds an error if no argument was given to --key'
     it 'adds an error if the date is not 6 digits'
     it 'adds an error if the key is not 4 digits'
     it 'adds an error if the input file does not exist'
